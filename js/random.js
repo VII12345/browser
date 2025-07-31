@@ -46,7 +46,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 基础设置
         fillInput('#env-name', `环境-${rand()}`);
-        fillInput('#user-agent', `Mozilla/${Math.floor(Math.random() * 100)}.0 (Windows NT ${[10, 11][Math.floor(Math.random() * 2)]}; Win64; x64)`);
+        // 在你的脚本顶部或合适位置定义一份 UA 列表：
+        const UA_LIST = [
+            // Chrome 118 系列
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.5993.63 Safari/537.36',
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 13_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.5993.63 Safari/537.36',
+            // Firefox 117 系列
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:117.0) Gecko/20100101 Firefox/117.0',
+            'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:117.0) Gecko/20100101 Firefox/117.0',
+            // Edge 118 系列
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.5993.63 Safari/537.36 Edg/118.0.2088.57',
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 13_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.5993.63 Safari/537.36 Edg/118.0.2088.57',
+            // Safari 16 系列
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 13_0) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Safari/605.1.15',
+            'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1',
+            // Chrome Mobile (Android 13 Pixel 7)
+            'Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.5993.63 Mobile Safari/537.36',
+            // Opera 104 系列
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.5993.63 Safari/537.36 OPR/104.0.4815.75'
+        ];
+
+        // 随机选一个 UA 然后填到输入框里
+        const randomUA = UA_LIST[Math.floor(Math.random() * UA_LIST.length)];
+        fillInput('#user-agent', randomUA);
+
         fillInput('#group', ['测试组', '主账号', '备用组'][Math.floor(Math.random() * 3)]);
         fillInput('.form-input[placeholder="请输入备注"]', ['自动生成配置', '广告投放用', '指纹测试'][Math.floor(Math.random() * 3)]);
         activateRandom('#os-group');
@@ -54,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 基础指纹选项
         activateRandom('#webrtc-group');
         activateRandom('#timezone-group');
-        activateRandom('#language-group');
+        //activateRandom('#language-group');
         activateRandom('#resolution-group');
         activateByLabel('WebGL元数据');
         activateByLabel('Do Not Track');

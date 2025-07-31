@@ -14,6 +14,7 @@ function createWindow(initialPage = defaultPage) {
     height: 800,
     icon: path.join(__dirname, 'public/11.jpg'), //图标
     webPreferences: {
+      partition: 'persist:no-hsts-session',
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
       contextIsolation: true,
@@ -25,6 +26,17 @@ function createWindow(initialPage = defaultPage) {
   win.loadFile(initialPage);
 }
 app.commandLine.appendSwitch('remote-debugging-port', '12757');
+
+app.commandLine.appendSwitch(
+  'disable-features',
+  'HttpsOnlyMode,UpgradeInsecureRequests,StrictMixedContentChecking'
+);
+
+app.commandLine.appendSwitch(
+  'ignore-certificate-errors',
+  'true'
+);
+
 
 app.whenReady().then(() => {
   const configFolder = path.join(app.getPath('userData'), 'configs');
