@@ -1,0 +1,40 @@
+.floating-overview {
+    position: fixed;
+    bottom: 10%;
+    right: 24px;
+    width: 360px;
+    max-height: 70vh;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 16px 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    z-index: 9999;
+    overflow: hidden;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.overview-title {
+    font-size: 17px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #333;
+}
+
+.overview-scroll {
+    max-height: calc(70vh - 50px);
+    overflow-y: auto;
+    padding-right: 6px;
+}
+
+.overview-item {
+    font-size: 14px;
+    margin-bottom: 8px;
+    color: #444;
+}
+
+.overview-value {
+    color: #222;
+    font-weight: 500;
+    margin-left: 6px;
+}

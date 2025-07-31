@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>新建浏览器环境</title>
+    <link rel="stylesheet" href="style/base.css" />
+    <link rel="stylesheet" href="style/layout.css" />
+    <link rel="stylesheet" href="style/components.css" />
+    <link rel="stylesheet" href="style/create.css" />
+    <link rel="stylesheet" href="style/detail.css" />
+</head>
+
+<body>
+    <div id="app">
+        <!--主菜单-->
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon"></div>
+                指纹浏览器
+            </div>
+            <div class="main-menu">
+                <a class="menu-item" href="index.html">我的环境</a>
+                <a class="menu-item" href="create.html">新建环境</a>
+            </div>
+            <div style="margin-left: auto; display: flex; gap: 10px">
+                <button id="logout-button">退出登录</button>
+            </div>
+        </div>
+
+        <!--左侧边栏-->
+        <div class="main-container">
+            <div class="sidebar">
+                <div class="sidebar-item">
+                    <div class="sidebar-icon">+</div>
+                </div>
+                <div class="sidebar-item">
+                    <div class="sidebar-icon">□</div>
+                </div>
+                <div class="sidebar-item">
+                    <div class="sidebar-icon">□</div>
+                </div>
+                <div class="sidebar-item">
+                    <div class="sidebar-icon">□</div>
+                </div>
+                <div class="sidebar-item">
+                    <div class="sidebar-icon">□</div>
+                </div>
+                <div class="sidebar-item">
+                    <div class="sidebar-icon">□</div>
+                </div>
+                <div class="sidebar-item">
+                    <div class="sidebar-icon">□</div>
+                </div>
+                <div class="sidebar-item">
+                    <div class="sidebar-icon">□</div>
+                </div>
+            </div>
+
+            <!--新建浏览器环境-->
+            <div class="content">
+                <h2 class="page-title">新建浏览器环境</h2>
+                <button id="random-fingerprint-button" class="secondary-button" style="margin-bottom: 20px">
+                    随机指纹生成
+                </button>
+
+                <div class="tabs">
+                    <div class="tab active" data-tab="basic">基础设置</div>
+                    <div class="tab" data-tab="proxy">代理信息</div>
+                    <div class="tab" data-tab="fingerprint">指纹配置</div>
+                </div>
+
+                <div class="floating-overview" id="overviewPanel">
+                    <div class="overview-title">环境配置总览</div>
+                    <div class="overview-scroll">
+                        <div class="overview-item" data-label="浏览器">浏览器：<span class="overview-value">Chromium</span>
+                        </div>
+                        <div class="overview-item" data-label="操作系统">操作系统：<span class="overview-value">Windows 11</span>
+                        </div>
+                        <div class="overview-item" data-label="环境名称">名称：<span class="overview-value">未命名环境</span></div>
+                        <div class="overview-item" data-label="分组">分组：<span class="overview-value">未分组</span></div>
+                        <div class="overview-item" data-label="备注">备注：<span class="overview-value">无</span></div>
+
+                        <div class="overview-item" data-label="代理类型">代理类型：<span class="overview-value">No Proxy</span>
+                        </div>
+                        <div class="overview-item" data-label="代理地址">代理地址：<span class="overview-value">未填写</span></div>
+                        <div class="overview-item" data-label="启动标签页">启动标签页：<span class="overview-value">无</span></div>
+
+                        <div class="overview-item" data-label="User-Agent">User-Agent：<span
+                                class="overview-value">默认值</span></div>
+                        <div class="overview-item" data-label="WebRTC">WebRTC：<span class="overview-value">禁用</span>
+                        </div>
+                        <div class="overview-item" data-label="时区">时区：<span class="overview-value">Asia/Shanghai</span>
+
+                        </div>
+                        <div class="overview-item" data-label="语言">语言：<span class="detail-value">zh-CN</span></div>
+
+
+                        <div class="overview-item" data-label="分辨率">分辨率：<span class="overview-value">真实</span></div>
+                        <div class="overview-item" data-label="AudioContext">AudioContext：<span
+                                class="overview-value">噪声</span></div>
+                        <div class="overview-item" data-label="厂商">厂商：<span class="overview-value">Google Inc.
+                                (AMD)</span></div>
+                        <div class="overview-item" data-label="渲染器">渲染器：<span class="overview-value">ANGLE (AMD Radeon
+                                RX 6700)</span></div>
+                        <div class="overview-item" data-label="TLS">TLS：<span class="overview-value">真实</span></div>
+
+                        <div class="overview-item" data-label="Canvas噪音">Canvas 噪音：<span
+                                class="overview-value">启用</span></div>
+                        <div class="overview-item" data-label="WebGL噪音">WebGL 噪音：<span class="overview-value">关闭</span>
+                        </div>
+                        <div class="overview-item" data-label="AudioContext噪音">AudioContext 噪音：<span
+                                class="overview-value">启用</span></div>
+                        <div class="overview-item" data-label="ClientRects噪音">ClientRects：<span
+                                class="overview-value">关闭</span></div>
+                        <div class="overview-item" data-label="Plugin噪音">Plugin：<span class="overview-value">关闭</span>
+                        </div>
+
+                        <div class="overview-item" data-label="CPU">CPU：<span class="overview-value">真实</span></div>
+                        <div class="overview-item" data-label="RAM">RAM：<span class="overview-value">真实</span></div>
+                        <div class="overview-item" data-label="Do Not Track">Do Not Track：<span
+                                class="overview-value">默认</span></div>
+                        <div class="overview-item" data-label="端口扫描保护">端口扫描保护：<span class="overview-value">启用</span>
+                        </div>
+                        <div class="overview-item" data-label="启动参数">启动参数：<span class="overview-value">无</span></div>
+                    </div>
+                </div>
+
+
+
+                <div class="tab-content" id="basic">
+                    <div class="form-container">
+                        <div class="form-group">
+                            <label class="form-label">名称</label>
+                            <input type="text" class="form-input" placeholder="输入环境名称" id="env-name" />
+                        </div>
+
+                        <div class="form-group">
+                            <div class="setting-group" id="os-group">
+                                <div class="setting-label">操作系统</div>
+                                <div class="setting-options">
+                                    <div class="setting-option active" data-value="windows11">
+                                        Windows11
+                                    </div>
+                                    <div class="setting-option" data-value="windows10">
+                                        Windows10
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">User-Agent</label>
+                            <input type="text" class="form-input" placeholder="自定义 User-Agent" id="user-agent" />
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">分组</label>
+                            <input type="text" class="form-input" placeholder="未分组" id="group" />
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">备注</label>
+                            <input type="text" class="form-input" placeholder="请输入备注" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="proxy" style="display: none">
+                    <div class="form-container">
+                        <div class="form-group">
+                            <label class="form-label">代理信息</label>
+                            <div style="display: flex; gap: 10px; margin-top: 8px">
+                                <div class="setting-option active" data-value="custom">
+                                    自定义
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="setting-item">
+                                <div class="setting-label">代理类型</div>
+                                <div class="setting-options">
+                                    <div class="setting-option active" data-value="no">
+                                        No Proxy (本地直连)
+                                    </div>
+                                    <div class="setting-option" data-value="http">HTTP</div>
+                                    <div class="setting-option" data-value="socks4">SOCKS4</div>
+                                    <div class="setting-option" data-value="socks5">SOCKS5</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">host和端口</label>
+                            <input type="text" class="form-input" placeholder="例：http://127.0.0.1:10809" />
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">启动标签页</label>
+                            <input type="text" class="form-input" placeholder="输入网址(多个网址空格连接)" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="fingerprint" style="display: none">
+                    <div class="fingerprint-settings">
+                        <h3 class="section-title">指纹配置选项</h3>
+
+                        <div class="setting-group" id="webrtc-group">
+                            <label class="setting-label">WebRTC</label>
+                            <div class="setting-options">
+                                <div class="setting-option">转发</div>
+                                <div class="setting-option">替换</div>
+                                <div class="setting-option">真实</div>
+                                <div class="setting-option active">禁用</div>
+                            </div>
+                        </div>
+
+                        <div class="setting-group" id="timezone-group">
+                            <label class="setting-label">时区</label>
+                            <div class="setting-options">
+                                <div class="setting-option" data-type="real">真实</div>
+                                <div class="setting-option active" data-type="custom">
+                                    自定义
+                                </div>
+                            </div>
+
+                            <select class="form-select timezone-select" style="margin-top: 10px">
+                                <option value="Asia/Shanghai">Asia/Shanghai</option>
+                                <option value="Asia/Tokyo">Asia/Tokyo</option>
+                                <option value="Asia/Hong_Kong">Asia/Hong_Kong</option>
+                                <option value="Asia/Seoul">Asia/Seoul</option>
+                                <option value="Asia/Kolkata">Asia/Kolkata</option>
+                                <option value="Europe/London">Europe/London</option>
+                                <option value="Europe/Paris">Europe/Paris</option>
+                                <option value="Europe/Berlin">Europe/Berlin</option>
+                                <option value="America/New_York">America/New_York</option>
+                                <option value="America/Chicago">America/Chicago</option>
+                                <option value="America/Los_Angeles">
+                                    America/Los_Angeles
+                                </option>
+                                <option value="Australia/Sydney">Australia/Sydney</option>
+                                <option value="UTC">UTC</option>
+                            </select>
+                        </div>
+
+                        <div class="setting-group" id="language-group">
+                            <label class="setting-label">语言</label>
+                            <div class="setting-options">
+                                <div class="setting-option active" data-type="real">真实</div>
+                                <div class="setting-option" data-type="custom">自定义</div>
+                            </div>
+                            <select class="form-select language-select" style="display: none; margin-top: 10px">
+                                <option value="en-US">英语（美国）</option>
+                                <option value="en-GB">英语（英国）</option>
+                                <option value="ja">日语</option>
+                                <option value="zh-CN">中文（简体）</option>
+                                <option value="zh-TW">中文（繁体）</option>
+                                <option value="ko">韩语</option>
+                                <option value="de">德语</option>
+                                <option value="fr">法语</option>
+                                <option value="es">西班牙语</option>
+                                <option value="pt-BR">葡萄牙语（巴西）</option>
+                                <option value="ru">俄语</option>
+                                <option value="it">意大利语</option>
+                                <option value="hi">印地语</option>
+
+                            </select>
+                        </div>
+
+                        <div class="setting-group" id="resolution-group">
+                            <label class="setting-label">分辨率</label>
+                            <div class="setting-options">
+                                <div class="setting-option" data-type="random">随机</div>
+
+                                <div class="setting-option" data-type="ua">真实</div>
+                            </div>
+                        </div>
+
+
+                        <div class="setting-group">
+                            <label class="setting-label">厂商</label>
+                            <input type="text" class="form-input" value="Google Inc. (AMD)" />
+                        </div>
+
+                        <div class="setting-group">
+                            <label class="setting-label">渲染器</label>
+                            <div class="collapsible-select">
+                                <div class="collapsible-trigger">
+                                    <span class="selected-gpu">ANGLE (AMD Radeon RX 6700)</span>
+                                </div>
+                                <div class="collapsible-options">
+
+                                    <div class="option-item">ANGLE (AMD Radeon RX 6400)</div>
+                                    <div class="option-item">ANGLE (AMD Radeon RX 6500 XT)</div>
+                                    <div class="option-item">ANGLE (AMD Radeon RX 6600)</div>
+                                    <div class="option-item">ANGLE (AMD Radeon RX 6600 XT)</div>
+                                    <div class="option-item">ANGLE (AMD Radeon RX 6650 XT)</div>
+                                    <div class="option-item">ANGLE (AMD Radeon RX 6700)</div>
+                                    <div class="option-item">ANGLE (AMD Radeon RX 6700 XT)</div>
+                                    <div class="option-item">
+                                        ANGLE (AMD Radeon RX 6750 GRE)
+                                    </div>
+                                    <div class="option-item">ANGLE (AMD Radeon RX 6750 XT)</div>
+                                    <div class="option-item">ANGLE (AMD Radeon RX 6800)</div>
+                                    <div class="option-item">ANGLE (AMD Radeon RX 6800 XT)</div>
+                                    <div class="option-item">ANGLE (AMD Radeon RX 6900 XT)</div>
+                                    <div class="option-item">ANGLE (AMD Radeon RX 6950 XT)</div>
+                                    <div class="option-item">ANGLE (AMD Radeon RX 7600)</div>
+                                    <div class="option-item">ANGLE (AMD Radeon RX 7600 XT)</div>
+                                    <div class="option-item">ANGLE (AMD Radeon RX 7700 XT)</div>
+                                    <div class="option-item">ANGLE (AMD Radeon RX 7800 XT)</div>
+                                    <div class="option-item">
+                                        ANGLE (AMD Radeon RX 7900 GRE)
+                                    </div>
+                                    <div class="option-item">ANGLE (AMD Radeon RX 7900 XT)</div>
+                                    <div class="option-item">
+                                        ANGLE (AMD Radeon RX 7900 XTX)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="setting-group">
+                            <label class="setting-label">TLS</label>
+                            <div class="setting-options">
+                                <div class="setting-option active">真实</div>
+                                <div class="setting-option">随机</div>
+                            </div>
+                        </div>
+
+                        <div class="setting-group" id="hardware-noise-group">
+                            <label class="setting-label">硬件噪音</label>
+                            <div class="noise-items">
+                                <div class="noise-item">
+                                    <span>Canvas</span>
+                                    <label class="switch">
+                                        <input type="checkbox" data-name="canvas" checked />
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="noise-item">
+                                    <span>WebGL图像</span>
+                                    <label class="switch">
+                                        <input type="checkbox" data-name="webgl" />
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="noise-item">
+                                    <span>AudioContext</span>
+                                    <label class="switch">
+                                        <input type="checkbox" data-name="audio" />
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+
+                                <div class="noise-item">
+                                    <span>ClientRects</span>
+                                    <label class="switch">
+                                        <input type="checkbox" data-name="rects" />
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                                <div class="noise-item">
+                                    <span>plugin</span>
+                                    <label class="switch">
+                                        <input type="checkbox" data-name="plugin" />
+                                        <span class="slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CPU 设置 -->
+                        <div class="setting-group" id="cpu-group">
+                            <label class="setting-label">CPU</label>
+                            <div class="setting-options">
+                                <div class="setting-option active" data-type="real">真实</div>
+                                <div class="setting-option" data-type="custom">自定义</div>
+                            </div>
+                            <select class="form-select cpu-select" style="display: none; margin-top: 10px">
+                                <option value="4">4 核</option>
+                                <option value="8">8 核</option>
+                                <option value="12">12 核</option>
+                                <option value="16">16 核</option>
+                                <option value="24">24 核</option>
+                            </select>
+                        </div>
+
+                        <!-- RAM 设置 -->
+                        <div class="setting-group" id="ram-group">
+                            <label class="setting-label">RAM</label>
+                            <div class="setting-options">
+                                <div class="setting-option active" data-type="real">真实</div>
+                                <div class="setting-option" data-type="custom">自定义</div>
+                            </div>
+                            <select class="form-select ram-select" style="display: none; margin-top: 10px">
+                                <option value="4">4 GB</option>
+                                <option value="8">8 GB</option>
+                                <option value="16">16 GB</option>
+                                <option value="32">32 GB</option>
+                                <option value="64">64 GB</option>
+                            </select>
+                        </div>
+
+                        <div class="setting-group">
+                            <label class="setting-label">Do Not Track</label>
+                            <div class="setting-options">
+                                <div class="setting-option active">默认</div>
+                                <div class="setting-option">启用</div>
+                                <div class="setting-option">关闭</div>
+                            </div>
+                        </div>
+
+                        <div class="setting-group">
+                            <label class="setting-label">端口扫描保护</label>
+                            <div class="setting-options">
+                                <div class="setting-option active">启用</div>
+                                <div class="setting-option">关闭</div>
+                            </div>
+                            <input type="text" class="form-input" placeholder="选填，允许被扫描的端口" />
+                        </div>
+
+                        <div class="setting-group">
+                            <label class="setting-label">启动参数</label>
+                            <input type="text" class="form-input" placeholder="example:" />
+                        </div>
+                    </div>
+                </div>
+
+                <!--确定按钮-->
+                <div class="action-bar">
+                    <button class="primary-button" id="confirm-button">确定</button>
+                </div>
+
+                <div id="upload-status" style="display: none; color: green; margin-top: 10px">
+                    正在上传，请稍候...
+                </div>
+            </div>
+        </div>
+
+        <div class="help-button" id="helpButton_create">?</div>
+        <!-- 弹窗内容 -->
+        <div id="popupWindow_create" class="popup" style="display: none">
+            <div class="popup-content">
+                <span class="close-button" id="closeButton_create">&times;</span>
+
+                <ul>
+                    <li><strong>环境展示页面：</strong>会按照分组分类展示。</li>
+                    <li><strong>备注：</strong>会展示在概览里。</li>
+                    <li><strong>代理类型和 Host 端口：</strong>根据实际情况填写。</li>
+                    <li>
+                        <strong>启动标签页：</strong>启动浏览器时会自动打开的网页，填写
+                        URL，可以有多个。不同 URL 以空格连接。
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="js/tabs.js"></script>
+    <script src="js/system.js"></script>
+    <script src="js/button.js"></script>
+    <script src="js/fingerprint.js"></script>
+    <script src="js/gpu.js"></script>
+    <script src="js/detail.js"></script>
+    <script src="js/edit.js"></script>
+    <script src="js/random.js"></script>
+    <script src="js/logout.js"></script>
+    <script src="js/help.js"></script>
+</body>
+
+</html>

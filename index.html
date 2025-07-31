@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>新建浏览器环境</title>
+    <link rel="stylesheet" href="style/base.css">
+    <link rel="stylesheet" href="style/layout.css">
+    <link rel="stylesheet" href="style/components.css">
+    <link rel="stylesheet" href="style/index.css">
+
+</head>
+
+<body>
+    <div id="app">
+        <!--主菜单-->
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon"></div>
+                指纹浏览器
+            </div>
+
+
+            <div class="main-menu">
+                <a class="menu-item" href="index.html">我的环境</a>
+                <a class="menu-item" href="create.html">新建环境</a>
+
+            </div>
+            <div style="margin-left: auto; display: flex; gap: 10px;">
+
+                <button id="logout-button">退出登录</button>
+
+            </div>
+        </div>
+
+        <!--左侧边栏-->
+        <div class="main-container">
+            <div class="sidebar">
+                <div class="sidebar-item active" id="sidebar-all-env">
+                    <div class="sidebar-icon">所有</div>
+                </div>
+                <div class="sidebar-item" id="sidebar-group-manage">
+                    <div class="sidebar-icon">分组</div>
+                </div>
+            </div>
+
+
+
+            <!-- 环境列表显示 -->
+            <!-- 所有环境区域 -->
+            <div class="env-list-container" id="env-list-container">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <h2 style="margin: 0;">我的浏览器环境</h2>
+                    <button id="sync-button">同步</button>
+                </div>
+                <div id="env-list"></div>
+            </div>
+
+            <!-- 分组管理区域 -->
+            <div class="env-list-container hidden" id="group-list-container">
+                <h2>分组列表</h2>
+                <div id="group-list" style="margin-bottom: 20px;"></div>
+                <div id="group-env-list"></div>
+            </div>
+
+
+        </div>
+
+        <div class="help-button" id="helpButton_index">?</div>
+
+        <!-- 弹窗内容 -->
+        <div id="popupWindow_index" class="popup" style="display: none;">
+            <div class="popup-content">
+                <span class="close-button" id="closeButton_index">&times;</span>
+
+                <ul>
+                    <li><strong>同步按钮：</strong>可以手动与服务器同步保存的配置。</li>
+                    <li><strong>全选功能：</strong>可以全选所有环境，也可以单独全选分组。</li>
+                    <li><strong>一键启动：</strong>可以一键启动所有已勾选环境，也可以单独启动一个。</li>
+                    <li><strong>远程调试功能：</strong>是在这台电脑上启动浏览器服务端。</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+    <div id="debug-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>远程调试参数设置</h3>
+
+            <label>端口号：</label>
+            <input type="text" id="debug-port" placeholder="9222" />
+            <br />
+            <div class="modal-buttons">
+                <button onclick="confirmDebug()">确认调试</button>
+                <button onclick="closeDebugModal()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/loadconfig.js"></script>
+    <script src="js/logout.js"></script>
+    <script src="js/sync.js"></script>
+    <script src="js/help.js"></script>
+    <script src="js/sidebar.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>登录 / 注册</title>
+    <link rel="stylesheet" href="style/login.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="tab">
+            <button id="login-tab">登录</button>
+            <button id="register-tab">注册</button>
+            <button id="reset-tab">重设密码</button>
+        </div>
+
+        <!-- 登录表单 -->
+        <!-- 登录表单 -->
+        <form id="login-form">
+            <div class="form-group">
+                <input type="text" id="login-username" placeholder="用户名" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="login-password" placeholder="密码" required>
+            </div>
+            <button type="submit" class="submit">登录</button>
+
+            <!-- 👇 新增提示文字 -->
+            <div class="login-hint">
+                <span class="left-hint" id="show-register">注册账号</span>
+                <span class="right-hint" id="show-reset">忘记密码？</span>
+            </div>
+        </form>
+
+
+        <!-- 注册表单 -->
+        <form id="register-form" class="hidden">
+            <div class="form-group">
+                <input type="text" id="register-username" placeholder="用户名" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="register-password" placeholder="密码" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="register-confirm" placeholder="确认密码" required>
+            </div>
+            <button type="submit" class="submit">注册</button>
+        </form>
+
+        <form id="reset-form" class="hidden">
+            <div class="form-group">
+                <input type="text" id="email" placeholder="用户名" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="new_password" placeholder="新密码" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="reset-confirm" placeholder="确认新密码" required>
+            </div>
+            <button type="submit" class="submit">重设密码</button>
+        </form>
+    </div>
+
+    <script src="js/login.js"></script>
+</body>
+
+</html>

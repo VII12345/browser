@@ -1,0 +1,564 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #fff;
+  overflow: auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  height: 60px;
+  background-color: #fff;
+  border-bottom: 1px solid #e5e5e5;
+  z-index: 10;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  margin-right: 20px;
+}
+
+.logo-icon {
+  width: 24px;
+  height: 24px;
+  background-color: #1e88e5;
+  border-radius: 3px;
+  margin-right: 5px;
+}
+
+.main-menu,
+.right-menu {
+  display: flex;
+  align-items: center;
+}
+
+.menu-item {
+  padding: 0 15px;
+  cursor: pointer;
+  color: #606266;
+}
+
+.menu-item:hover {
+  color: #1e88e5;
+}
+
+.main-container {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  height: auto;
+  overflow: auto;
+}
+
+.sidebar {
+  flex: 0 0 60px;
+  min-width: 60px;
+  max-width: 80px;
+  background-color: #fff;
+  border-right: 1px solid #e5e5e5;
+}
+
+
+.sidebar-item {
+  display: flex;
+  justify-content: center;
+  padding: 15px 0;
+  cursor: pointer;
+}
+
+.sidebar-icon {
+  width: 24px;
+  height: 24px;
+  color: #606266;
+}
+
+.content {
+  flex: 1 1 auto;
+  padding: 2vw;
+  overflow-y: auto;
+}
+
+
+.page-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.page-subtitle {
+  font-size: 14px;
+  color: #606266;
+  margin-bottom: 20px;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+
+
+.form-group {
+  width: 100%;
+  max-width: 600px;
+  /* 可根据需要设置最大宽度 */
+}
+
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.form-input,
+.form-select {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.detail-panel {
+  position: absolute;
+  right: 20px;
+  top: 100px;
+  width: 300px;
+  background-color: #fff;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  z-index: 10;
+}
+
+.detail-title {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.detail-item {
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+
+.detail-value {
+  color: #606266;
+}
+
+.setting-item {
+  margin-bottom: 15px;
+}
+
+.setting-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.setting-options {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.setting-option {
+  padding: 6px 15px;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.setting-option.active {
+  background-color: #1e88e5;
+  color: white;
+  border-color: #1e88e5;
+}
+
+.action-bar {
+  margin-top: 30px;
+  display: flex;
+  justify-content: flex-start;
+  gap: 15px;
+}
+
+.primary-button,
+.secondary-button {
+  padding: 10px 2vw;
+  font-size: 1em;
+  border-radius: 4px;
+  min-width: 120px;
+}
+
+.tab-content {
+  display: block;
+}
+
+.help-button {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  width: 50px;
+  height: 50px;
+  background-color: #1e88e5;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+/* 选项卡样式 */
+.tabs {
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.tab {
+  padding: 10px 20px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+
+.tab.active {
+  border-bottom-color: #1e88e5;
+  color: #1e88e5;
+}
+
+/* 添加删除按钮样式 */
+.delete-btn {
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.delete-btn:hover {
+  background-color: #ff7875;
+}
+
+.browser-item:hover {
+  background-color: #f5f5f5;
+}
+
+@media (max-width: 768px) {
+  .main-container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    display: none;
+    /* 可隐藏侧边栏 */
+  }
+
+  .form-container {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-panel {
+    position: relative;
+    width: 100%;
+    top: auto;
+    right: auto;
+    margin-top: 20px;
+  }
+
+  .action-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .primary-button,
+  .secondary-button {
+    width: 100%;
+    margin-top: 10px;
+  }
+}
+
+.fingerprint-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.setting-label {
+  font-weight: 500;
+  font-size: 14px;
+  color: #606266;
+}
+
+.setting-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.setting-option {
+  padding: 6px 12px;
+  background-color: #fff;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #606266;
+}
+
+.setting-option.active {
+  background-color: #1e88e5;
+  color: white;
+  border-color: #1e88e5;
+}
+
+.form-input {
+  width: 100%;
+  max-width: 500px;
+  padding: 8px 10px;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+
+
+
+.option-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #606266;
+}
+
+.option-item:hover {
+  background-color: #f0f0f0;
+}
+
+
+
+.hardware-privacy-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.setting-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.setting-label {
+  font-weight: 500;
+  font-size: 14px;
+  color: #606266;
+}
+
+.setting-options {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.setting-option {
+  padding: 6px 12px;
+  background-color: #fff;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  color: #606266;
+}
+
+.setting-option.active {
+  background-color: #1e88e5;
+  color: white;
+  border-color: #1e88e5;
+}
+
+.form-input {
+  width: 100%;
+  max-width: 500px;
+  padding: 8px 10px;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.preset-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.preset-item {
+  padding: 6px 12px;
+  background-color: #f0f0f0;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.preset-item:hover {
+  background-color: #1e88e5;
+  color: white;
+  border-color: #1e88e5;
+}
+
+.custom-resolution-input {
+  margin-top: 10px;
+  display: block;
+}
+
+.noise-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.noise-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 12px;
+  background-color: #f8f9fa;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+/* Switch 样式 */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  border-radius: 20px;
+  transition: 0.3s;
+}
+
+.slider::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  width: 16px;
+  height: 16px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+
+input:checked+.slider {
+  background-color: #1e88e5;
+}
+
+input:checked+.slider::before {
+  transform: translateX(20px);
+}
+
+.env-list-container {
+  padding: 30px;
+}
+
+.env-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.env-card {
+  padding: 16px;
+  background: linear-gradient(135deg, #e3f2fd, #ffffff);
+  border: 1px solid #cfd8dc;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.env-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.env-card-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #1976d2;
+  margin-bottom: 6px;
+}
+
+.env-card-details {
+  font-size: 14px;
+  color: #455a64;
+  margin-bottom: 10px;
+  line-height: 1.6;
+}
+
+.env-card-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-start;
+}
+
+.env-button {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 5px;
+  font-size: 13px;
+  font-weight: 500;
+  background-color: #1e88e5;
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.env-button:hover {
+  background-color: #1565c0;
+}
