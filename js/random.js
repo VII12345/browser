@@ -70,6 +70,36 @@ document.addEventListener('DOMContentLoaded', () => {
         const randomUA = UA_LIST[Math.floor(Math.random() * UA_LIST.length)];
         fillInput('#user-agent', randomUA);
 
+        const proxy_num = 4;
+        const input = document.getElementById('form_proxy');
+        const proxyTypeContainer = document.getElementById('proxy-type');
+
+        if (!input || !proxyTypeContainer) return;
+
+        // 随机端口号：20000–20007
+        const port = 20000 + Math.floor(Math.random() * 2 * proxy_num);
+        const isEven = port % 2 === 0;
+
+        // 协议与代理类型
+        const protocol = isEven ? 'socks5://' : 'http://';
+        const proxyValue = isEven ? 'socks5' : 'http';
+
+        // 设置输入框值
+        input.value = `${protocol}127.0.0.1:${port}`;
+
+        proxyTypeContainer.querySelectorAll('.setting-option').forEach(option => {
+            option.classList.remove('active');
+        });
+
+        // 设置对应代理类型为 active
+        const selectedOption = proxyTypeContainer.querySelector(`.setting-option[data-value="${proxyValue}"]`);
+        if (selectedOption) {
+            selectedOption.classList.add('active');
+        }
+
+
+
+
         fillInput('#group', ['测试组', '主账号', '备用组'][Math.floor(Math.random() * 3)]);
         fillInput('.form-input[placeholder="请输入备注"]', ['自动生成配置', '广告投放用', '指纹测试'][Math.floor(Math.random() * 3)]);
         activateRandom('#os-group');
@@ -85,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
         activateByLabel('TLS');
         //fillInput('.custom-resolution-input', ['1920x1080', '1366x768', '2560x1440'][Math.floor(Math.random() * 3)]);
         selectRandom('.timezone-select');
-        selectRandom('.language-select');
+        //selectRandom('.language-select');
 
         // 硬件配置
         const cpuGroup = '#cpu-group';

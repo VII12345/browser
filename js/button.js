@@ -3,9 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const isEditing = localStorage.getItem("isEditing") === "true";
 
   confirmBtn?.addEventListener("click", async () => {
-    // const confirmed = await window.electronAPI.confirm("是否确定保存当前配置？");
-    const confirmed = window.confirm("是否确定保存当前配置？");
-
+    const confirmed = await window.electronAPI.confirm("是否确定保存当前配置？");
     if (!confirmed) return;
 
     const configData = collectFormData();
@@ -18,6 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const oldFilename = localStorage.getItem("editConfigFile");
     const newFilename = `config_${configData.src}.json`;
+    const fingerprintFilename = `fingerprint_${configData.src}.json`;
 
     try {
       const uploadOk = await uploadToServer(configData);
@@ -27,22 +26,40 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const safeData = JSON.parse(JSON.stringify(configData));
-
-      const resultPath = await window.electronAPI.saveConfig(newFilename, safeData);
-
-      console.log("配置已保存:", resultPath);
+      await window.electronAPI.saveConfig(newFilename, safeData);
+      console.log("✅ 配置已保存:", newFilename);
 
       const fingerprintData = extractFingerprintSubset(configData);
-      const fingerprintFilename = `fingerprint_${configData.src}.json`;
       await window.electronAPI.saveConfig(fingerprintFilename, fingerprintData);
-      console.log("指纹文件已保存:", fingerprintFilename);
+      console.log("✅ 指纹文件已保存:", fingerprintFilename);
 
       if (isEditing && oldFilename) {
+        // ✅ 删除本地旧文件
         await window.electronAPI.deleteConfig(oldFilename);
-        console.log("删除旧配置:", oldFilename);
-      }
+        console.log("🗑 删除旧配置:", oldFilename);
 
-      // await window.electronAPI.confirm(`上传成功并保存本地配置：${newFilename}`);
+        // ✅ 删除远程旧文件
+        const userId = configData.user_id;
+        const folderName = configData.group || "未分组";
+        const oldFingerprintFilename = oldFilename.replace("config_", "fingerprint_");
+
+        const res = await fetch("http://vpn.xzzzs.xyz:12809/delete_files_by_folder", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            user_id: userId,
+            folder_name: folderName,
+            files: [oldFilename, oldFingerprintFilename]
+          })
+        });
+
+        const result = await res.json();
+        if (result.status !== "success") {
+          console.warn("⚠️ 远程删除失败:", result.message);
+        } else {
+          console.log("✅ 远程文件已删除:", result.deleted_files);
+        }
+      }
 
       localStorage.removeItem("isEditing");
       localStorage.removeItem("editConfigFile");
@@ -55,6 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
 
 
 // 📋 表单数据采集函数
