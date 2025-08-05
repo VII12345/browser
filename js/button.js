@@ -3,7 +3,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const isEditing = localStorage.getItem("isEditing") === "true";
 
   confirmBtn?.addEventListener("click", async () => {
-    const confirmed = await window.electronAPI.confirm("是否确定保存当前配置？");
+    // const confirmed = await window.electronAPI.confirm("是否确定保存当前配置？");
+    const confirmed = await window.confirm("是否确定保存当前配置？");
     if (!confirmed) return;
 
     const configData = collectFormData();
