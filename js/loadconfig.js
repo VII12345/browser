@@ -202,7 +202,7 @@ async function deleteConfig(filename) {
     const fingerprintFilename = `fingerprint_${baseName}.json`;
     const filesToDelete = [filename, fingerprintFilename];
 
-    const res = await fetch("http://vpn.xzzzs.xyz:12809/upload/delete_files_by_folder", {
+    const res = await fetch("http://rdp.xzzzs.xyz:12809/upload/delete_files_by_folder", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${accessToken}`,

@@ -35,30 +35,42 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log("✅ 指纹文件已保存:", fingerprintFilename);
 
       if (isEditing && oldFilename) {
-        // ✅ 删除本地旧文件
-        await window.electronAPI.deleteConfig(oldFilename);
-        console.log("🗑 删除旧配置:", oldFilename);
-
-        // ✅ 删除远程旧文件
         const userId = configData.user_id;
         const folderName = configData.group || "未分组";
         const oldFingerprintFilename = oldFilename.replace("config_", "fingerprint_");
 
-        const res = await fetch("http://vpn.xzzzs.xyz:12809/delete_files_by_folder", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            user_id: userId,
-            folder_name: folderName,
-            files: [oldFilename, oldFingerprintFilename]
-          })
-        });
+        // 如果旧文件名与新文件名相同，说明我们是在编辑同一个 src，
+        // 此时 save 写入的是同名文件，直接删除旧文件会把刚保存的文件也删掉，
+        // 因此只在名字不同时才执行删除（本地 & 远程）。
+        if (oldFilename !== newFilename) {
+          // ✅ 删除本地旧文件
+          await window.electronAPI.deleteConfig(oldFilename);
+          // 同步删除对应的指纹文件（如果存在）
+          await window.electronAPI.deleteConfig(oldFingerprintFilename).catch(() => {});
+          console.log("🗑 已删除本地旧配置:", oldFilename, oldFingerprintFilename);
 
-        const result = await res.json();
-        if (result.status !== "success") {
-          console.warn("⚠️ 远程删除失败:", result.message);
+          // ✅ 删除远程旧文件（告诉后端删除旧文件）
+          try {
+            const res = await fetch("http://rdp.xzzzs.xyz:12809/delete_files_by_folder", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                user_id: userId,
+                folder_name: folderName,
+                files: [oldFilename, oldFingerprintFilename]
+              })
+            });
+            const result = await res.json();
+            if (result.status !== "success") {
+              console.warn("⚠️ 远程删除失败:", result.message);
+            } else {
+              console.log("✅ 远程文件已删除:", result.deleted_files);
+            }
+          } catch (err) {
+            console.warn("远程删除请求失败:", err);
+          }
         } else {
-          console.log("✅ 远程文件已删除:", result.deleted_files);
+          console.log("⚠️ 编辑模式且旧文件名与新文件名相同，已跳过本地/远程删除以避免误删刚保存的文件。");
         }
       }
 
@@ -257,7 +269,7 @@ async function uploadToServer(configData) {
   formData.append("fingerprint_file", fingerprintFile); // 双文件上传
 
   try {
-    const res = await fetch("http://vpn.xzzzs.xyz:12809/upload/upload", {
+    const res = await fetch("http://rdp.xzzzs.xyz:12809/upload/upload", {
       method: "POST",
       body: formData
     });

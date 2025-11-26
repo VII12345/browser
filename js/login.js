@@ -30,7 +30,7 @@ loginForm.onsubmit = async (e) => {
     const password = document.getElementById("login-password").value.trim();
 
     try {
-        const res = await fetch("http://vpn.xzzzs.xyz:12809/auth/login", {
+        const res = await fetch("http://rdp.xzzzs.xyz:12809/auth/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password })
@@ -88,7 +88,7 @@ registerForm.onsubmit = async (e) => {
 
 
     try {
-        const res = await fetch("http://vpn.xzzzs.xyz:12809/auth/register", {
+        const res = await fetch("http://rdp.xzzzs.xyz:12809/auth/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password })
@@ -129,7 +129,7 @@ resetForm.onsubmit = async (e) => {
     }
 
     try {
-        const res = await fetch("http://vpn.xzzzs.xyz:12809/auth/reset-password", {
+        const res = await fetch("http://rdp.xzzzs.xyz:12809/auth/reset-password", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, new_password: newPassword }) // ✅ 传入密码
