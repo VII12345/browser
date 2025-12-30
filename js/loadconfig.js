@@ -114,11 +114,20 @@ async function runEnvironment(src) {
     return;
   }
 
+  // 1. 获取基础路径 (你需要确保你的 electronAPI.getChromePaths 在 Linux 下也能返回正确路径)
+  // 如果后端没写好，这里会报错，所以我加了容错
+  let paths = {};
+  try {
+    paths = await window.electronAPI.getChromePaths();
+  } catch (e) {
+    console.warn("获取路径API失败，将使用默认硬编码路径", e);
+  }
+
   const fingerprintFilename = `fingerprint_${src}.json`;
   const config = await window.electronAPI.readConfig(fingerprintFilename);
 
   const fingerprintMap = {
-    os: '--fingerprint_windows',
+    os: '--fingerprint_windows', // 如果需要伪装成 Windows 保持不变，如果需要伪装 Linux 改为 --fingerprint_linux
     canvas: '--fingerprint_canvas',
     webgl_image: '--fingerprint_webgl',
     audiocontext: '--fingerprint_audio',
@@ -135,35 +144,47 @@ async function runEnvironment(src) {
     tls: '--fingerprint_ja4',
     proxy: '--proxy-server',
     port_scan_ports: '--explicitly-allowed-ports',
-
   };
 
+  // 2. Linux 路径设置
+  // 优先使用 API 返回的 dataDirBase，如果没有则使用你硬编码的 /home/zzx...
+  const dataBase = paths.dataDirBase || '/home/zzx/.config/chromium';
+  const userDataDir = `${dataBase}/${src}`; // 注意：Linux 使用正斜杠 /
 
-  const paths = await window.electronAPI.getChromePaths();
-  const userDataDir = `${paths.dataDirBase}\\${src}`;
   const args = [`--user-data-dir="${userDataDir}"`];
 
+  // 3. 组装参数
+  if (config.user_agent) args.push(`--fingerprint_ua="${config.user_agent}"`);
 
-  if (config.user_agent) args.push(`--user-agent="${config.user_agent}"`);
   for (const [key, flag] of Object.entries(fingerprintMap)) {
     if (config[key]) args.push(`${flag}="${config[key]}"`);
   }
 
-
   if (config.webrtc === "禁用") args.push('--fingerprint_webrtc_disable="1"');
   if (config.startup_args) args.push(config.startup_args);
   if (config.url) args.push(config.url);
-  const chromeCommand = `"chrome.exe" ${args.join(" ")}`;
-  const command = `cd /d "${paths.chromeDir}" && ${chromeCommand}`;
-  console.log("生成的命令:", command);
+
+  // 4. Linux 启动命令
+  // 这里的 executable 应该是 Linux 上的启动命令，比如 'chromium', 'google-chrome', 或者绝对路径
+  // 如果你的 API 返回了 executablePath (paths.chromePath)，就用 API 的
+  const executable = paths.chromePath || 'chromium-browser-unstable';
+
+  // 核心修改：
+  // 1. 不需要 "chrome.exe"
+  // 2. 不需要 "cd /d"
+  // 3. 末尾添加 " &" 让其在 Linux 后台运行，如果不加 &，你的 Electron 界面可能会卡死直到浏览器关闭
+  const command = `"${executable}" ${args.join(" ")} &`;
+
+  console.log("Linux 生成的命令:", command);
+
   try {
-    const result = await window.electronAPI.runCmd(command);
+    // 调用主进程执行 shell 命令
+    await window.electronAPI.runCmd(command);
     await window.electronAPI.alert(`已加载环境：${src}`);
   } catch (err) {
     console.error("加载失败:", err);
-    await window.electronAPI.alert("加载环境失败，请检查路径或权限");
+    await window.electronAPI.alert(`加载环境失败: ${err.message}`);
   }
-
 }
 
 async function editConfig(filename) {
@@ -202,7 +223,7 @@ async function deleteConfig(filename) {
     const fingerprintFilename = `fingerprint_${baseName}.json`;
     const filesToDelete = [filename, fingerprintFilename];
 
-    const res = await fetch("http://rdp.xzzzs.xyz:12809/upload/delete_files_by_folder", {
+    const res = await fetch("http://hk.xzzzs.xyz:8000/upload/delete_files_by_folder", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -290,9 +311,14 @@ function closeDebugModal() {
   currentDebugSrc = "";
 }
 
+// 这一部分保持不变，用于弹出窗口
+// function runEnvironmentDebug(src) { ... }
+// function closeDebugModal() { ... }
+
 async function confirmDebug() {
   const port = document.getElementById("debug-port").value.trim();
   const src = currentDebugSrc;
+
   if (!port) {
     await window.electronAPI.alert("请填写端口号");
     return;
@@ -305,11 +331,19 @@ async function confirmDebug() {
     return;
   }
 
+  // 1. 获取基础路径配置
+  let paths = {};
+  try {
+    paths = await window.electronAPI.getChromePaths();
+  } catch (e) {
+    console.warn("获取路径API失败，使用默认路径", e);
+  }
+
   const fingerprintFilename = `fingerprint_${src}.json`;
   const config = await window.electronAPI.readConfig(fingerprintFilename);
 
   const fingerprintMap = {
-    os: '--fingerprint_windows',
+    os: '--fingerprint_windows', // 同样，如果需要伪装 Linux 请改为 --fingerprint_linux
     canvas: '--fingerprint_canvas',
     webgl_image: '--fingerprint_webgl',
     audiocontext: '--fingerprint_audio',
@@ -319,7 +353,6 @@ async function confirmDebug() {
     ram: '--fingerprint_memory',
     timezone: '--fingerprint_timezone',
     resolution: '--fingerprint_screen',
-    os: '--fingerprint_windows',
     device_name: '--fingerprint_device',
     mac_address: '--fingerprint_mac',
     gpu: '--fingerprint_gpu_amd',
@@ -328,15 +361,18 @@ async function confirmDebug() {
     language: '--lang',
   };
 
+  // 2. Linux 路径设置 (使用正斜杠 /)
+  // 如果 API 没返回 dataDirBase，使用默认的 Linux 配置路径
+  const dataBase = paths.dataDirBase || '/home/zzx/.config/chromium';
+  const userDataDir = `${dataBase}/${src}`;
 
-  const paths = await window.electronAPI.getChromePaths();
-  const userDataDir = `${paths.dataDirBase}\\${src}`;
   const args = [`--user-data-dir="${userDataDir}"`];
+
+  // 添加远程调试端口参数
   args.push(`--remote-debugging-port=${port}`);
 
-
-
-  if (config.user_agent) args.push(`--user-agent="${config.user_agent}"`);
+  // 3. 组装指纹参数
+  if (config.user_agent) args.push(`--fingerprint_ua="${config.user_agent}"`);
   for (const [key, flag] of Object.entries(fingerprintMap)) {
     if (config[key]) args.push(`${flag}="${config[key]}"`);
   }
@@ -344,18 +380,26 @@ async function confirmDebug() {
   if (config.webrtc === "禁用") args.push('--fingerprint_webrtc_disable="1"');
   if (config.startup_args) args.push(config.startup_args);
   if (config.url) args.push(config.url);
-  const chromeCommand = `"chrome.exe" ${args.join(" ")}`;
-  const command = `cd /d "${paths.chromeDir}" && ${chromeCommand}`;
-  console.log("生成的命令:", command);
+
+  // 4. Linux 启动命令构建
+  // 使用 API 返回的 chromePath，或者回退到 'chromium-browser-unstable'
+  // 如果你是用 google-chrome，这里改为 'google-chrome'
+  const executable = paths.chromePath || 'chromium-browser-unstable';
+
+  // 注意：
+  // 1. 直接调用 executable，不需要 cd
+  // 2. 末尾加 " &" 表示后台运行 (detach)
+  const command = `"${executable}" ${args.join(" ")} &`;
+
+  console.log("Linux 调试模式命令:", command);
+
   try {
     const result = await window.electronAPI.runCmd(command);
-    await window.electronAPI.alert(`已加载环境：${src}`);
+    await window.electronAPI.alert(`已启动调试环境：${src} (端口: ${port})`);
   } catch (err) {
     console.error("加载失败:", err);
-    await window.electronAPI.alert("加载环境失败，请检查路径或权限");
+    await window.electronAPI.alert(`启动调试失败: ${err.message}`);
   }
-
-
 }
 
 document.addEventListener("DOMContentLoaded", () => {

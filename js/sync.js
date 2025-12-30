@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-            const res = await fetch(`http://rdp.xzzzs.xyz:12809/upload/instances/${userId}`);
+            const res = await fetch(`http://hk.xzzzs.xyz:8000/upload/instances/${userId}`);
             const json = await res.json();
 
             if (json.status === "success") {

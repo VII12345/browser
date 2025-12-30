@@ -46,12 +46,12 @@ document.addEventListener("DOMContentLoaded", () => {
           // ✅ 删除本地旧文件
           await window.electronAPI.deleteConfig(oldFilename);
           // 同步删除对应的指纹文件（如果存在）
-          await window.electronAPI.deleteConfig(oldFingerprintFilename).catch(() => {});
+          await window.electronAPI.deleteConfig(oldFingerprintFilename).catch(() => { });
           console.log("🗑 已删除本地旧配置:", oldFilename, oldFingerprintFilename);
 
           // ✅ 删除远程旧文件（告诉后端删除旧文件）
           try {
-            const res = await fetch("http://rdp.xzzzs.xyz:12809/delete_files_by_folder", {
+            const res = await fetch("http://hk.xzzzs.xyz:8000/delete_files_by_folder", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
@@ -269,7 +269,7 @@ async function uploadToServer(configData) {
   formData.append("fingerprint_file", fingerprintFile); // 双文件上传
 
   try {
-    const res = await fetch("http://rdp.xzzzs.xyz:12809/upload/upload", {
+    const res = await fetch("http://hk.xzzzs.xyz:8000/upload/upload/", {
       method: "POST",
       body: formData
     });
