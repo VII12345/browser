@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
           // ✅ 删除远程旧文件（告诉后端删除旧文件）
           try {
-            const res = await fetch("http://hk.xzzzs.xyz:8000/delete_files_by_folder", {
+            const res = await fetch(`${API_BASE_URL}/delete_files_by_folder`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
@@ -269,7 +269,7 @@ async function uploadToServer(configData) {
   formData.append("fingerprint_file", fingerprintFile); // 双文件上传
 
   try {
-    const res = await fetch("http://hk.xzzzs.xyz:8000/upload/upload/", {
+    const res = await fetch(`${API_BASE_URL}/upload/upload/`, {
       method: "POST",
       body: formData
     });
@@ -295,6 +295,5 @@ async function uploadToServer(configData) {
     return false;
   }
 }
-
 
 

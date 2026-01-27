@@ -223,7 +223,7 @@ async function deleteConfig(filename) {
     const fingerprintFilename = `fingerprint_${baseName}.json`;
     const filesToDelete = [filename, fingerprintFilename];
 
-    const res = await fetch("http://hk.xzzzs.xyz:8000/upload/delete_files_by_folder", {
+    const res = await fetch(`${API_BASE_URL}/upload/delete_files_by_folder`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -486,7 +486,6 @@ function renderGroupEnvs(groupName) {
     container.appendChild(card);
   });
 }
-
 
 
 

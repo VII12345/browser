@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-            const res = await fetch(`http://hk.xzzzs.xyz:8000/upload/instances/${userId}`);
+            const res = await fetch(`${API_BASE_URL}/upload/instances/${userId}`);
             const json = await res.json();
 
             if (json.status === "success") {
