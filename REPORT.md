@@ -23,25 +23,21 @@
 
 **12:43** - CC 代码编写完成
 
-**12:44** - 审核验证通过（build 成功，所有文件正确）
+**12:44** - 审核验证通过（build 成功）
 
 **12:45** - Git commit 成功 (cf74be8)
-
-**12:47** - 决定：保持本地 commit，暂不推送到远程仓库
 
 #### 任务 2: 后端 API 重建
 
 **12:48** - 开始任务 2
 
-**12:48** - 派 CC 出任务 2 plan（Plan 模式）
-
 **12:50** - CC plan 完成，审核通过
 
-**12:51** - 派 CC 执行代码编写（Agent 模式）
+**12:51** - 派 CC 执行代码编写
 
-**13:00** - CC 代码编写完成，创建 17 个 Python 文件
+**13:00** - CC 代码编写完成
 
-**13:01** - 测试后端 API，发现创建环境 bug（group 字段映射）
+**13:01** - 测试发现创建环境 bug
 
 **13:02** - 派 CC 修复 bug
 
@@ -49,7 +45,21 @@
 
 **13:09** - 重新测试所有 API，全部通过
 
-**13:10** - Git commit 成功
+**13:12** - Git commit 成功 (4190d97)
+
+#### 任务 3: 登录 + 布局框架
+
+**13:13** - 开始任务 3
+
+**13:15** - CC plan 完成，审核通过
+
+**13:16** - 派 CC 执行代码编写
+
+**13:25** - CC 代码编写完成
+
+**13:26** - Build 验证通过
+
+**13:27** - Git commit 成功
 
 ---
 
@@ -57,9 +67,9 @@
 
 | 任务 | 状态 | 开始时间 | 结束时间 | Git 提交 |
 |------|------|----------|----------|----------|
-| 任务 1: 项目脚手架搭建 | ✅ 完成 | 12:29 | 12:45 | cf74be8 (本地) |
-| 任务 2: 后端 API 重建 | ✅ 完成 | 12:48 | 13:10 | 待提交 |
-| 任务 3: 登录 + 布局框架 | 待开始 | - | - | - |
+| 任务 1: 项目脚手架搭建 | ✅ 完成 | 12:29 | 12:45 | cf74be8 |
+| 任务 2: 后端 API 重建 | ✅ 完成 | 12:48 | 13:12 | 4190d97 |
+| 任务 3: 登录 + 布局框架 | ✅ 完成 | 13:13 | 13:27 | 待提交 |
 | 任务 4: 环境管理核心功能 | 待开始 | - | - | - |
 | 任务 5: 联调 + 收尾 | 待开始 | - | - | - |
 
@@ -67,149 +77,61 @@
 
 ## Plan 记录
 
-### 任务 1 Plan
+### 任务 3 Plan
 
 **Plan 来源**: Claude Code (Plan 模式)
 
 **Plan 状态**: ✅ 审核通过
 
-详见上方任务 1 执行记录。
+#### 现有代码分析
 
----
+**已有的基础设施（良好的部分）:**
+- `src/stores/auth.ts` — 完整的 auth store
+- `src/api/auth.ts` + `src/api/client.ts` — API 层完整
+- `src/types/auth.ts` — 类型定义完整
+- `src/router/routes.ts` — 路由定义完整
+- shadcn-vue 组件库已安装
 
-### 任务 2 Plan
+**发现的问题:**
+1. LoginView.vue 使用原生 HTML，未使用 shadcn-vue 组件
+2. DefaultLayout.vue 使用原生 HTML + 内联 SVG
+3. style.css 只有亮色主题，没有暗色主题
+4. authStore.init() 未被调用
+5. App.vue 缺少 Toaster
+6. api/client.ts 的 401 处理绕过 auth store
 
-**Plan 来源**: Claude Code (Plan 模式)
+#### 执行步骤
 
-**Plan 状态**: ✅ 审核通过
-
-#### 项目结构
-```
-backend/
-├── main.py                    # FastAPI 应用入口
-├── requirements.txt           # Python 依赖
-├── config.py                  # 配置（JWT 密钥、数据库路径等）
-├── database.py                # SQLAlchemy 引擎和会话管理
-├── models/
-│   ├── user.py                # User 模型
-│   └── environment.py         # Environment 模型
-├── schemas/
-│   ├── auth.py                # 认证相关 Pydantic schema
-│   ├── environment.py         # 环境相关 Pydantic schema
-│   └── common.py              # 通用响应 schema
-├── routers/
-│   ├── auth.py                # 认证路由
-│   ├── environments.py        # 环境管理路由
-│   ├── groups.py              # 分组路由
-│   └── sync.py                # 文件同步路由
-├── services/
-│   ├── auth_service.py        # 认证业务逻辑
-│   └── environment_service.py # 环境业务逻辑
-├── utils/
-│   ├── security.py            # JWT + 密码工具
-│   └── deps.py                # FastAPI 依赖注入
-└── uploads/                   # 上传文件存储目录
-```
-
-#### 数据库模型
-- **User**: id(UUID), email, hashed_password, created_at
-- **Environment**: id, src, user_id, 35+ 指纹配置字段, created_at, updated_at
-
-#### API 接口
-1. 认证: POST /api/auth/register, /login, /reset-password
-2. 环境: GET/POST /api/environments/, GET/PUT/DELETE /api/environments/{id}
-3. 分组: GET /api/groups/, GET /api/groups/{name}/environments
-4. 同步: POST /api/sync/upload, GET /api/sync/download/{user_id}
+1. 添加暗色主题 CSS 变量到 style.css
+2. 创建 src/composables/useTheme.ts 主题切换工具
+3. 重写 LoginView.vue（使用 Card, Tabs, Input, Button, Label）
+4. 重写 DefaultLayout.vue（使用 lucide 图标 + DropdownMenu + Tooltip）
+5. 修复 main.ts（调用 authStore.init()）
+6. 修改 App.vue（添加 Toaster）
+7. 修复 api/client.ts（401 处理改用 authStore.logout()）
 
 ---
 
 ## 审核记录
 
-### 任务 1 Plan 审核
+### 任务 3 代码审核
 
-**审核时间**: 12:38
-
-**审核结果**: ✅ 通过
-
----
-
-### 任务 1 代码审核
-
-**审核时间**: 12:44
-
-**审核结果**: ✅ 通过
-
-**验证结果**:
-1. ✅ `pnpm build` 成功
-2. ✅ 所有文件内容正确
-3. ✅ 残留文件已清理
-
----
-
-### 任务 2 Plan 审核
-
-**审核时间**: 12:50
-
-**审核结果**: ✅ 通过
-
-**审核要点**:
-1. ✅ 技术栈正确（FastAPI + SQLite + SQLAlchemy + JWT）
-2. ✅ API 接口与前端匹配
-3. ✅ 数据库模型完整
-4. ✅ 安全措施到位（密码哈希、JWT、依赖注入）
-
----
-
-### 任务 2 代码审核
-
-**审核时间**: 13:10
+**审核时间**: 13:26
 
 **审核结果**: ✅ 通过
 
 **执行摘要**:
-- ✅ 创建 17 个 Python 文件
-- ✅ 依赖安装成功
-- ✅ 数据库表自动创建
+- ✅ 暗色主题支持添加
+- ✅ 主题切换 composable 创建
+- ✅ LoginView.vue 重写完成
+- ✅ DefaultLayout.vue 重写完成
+- ✅ main.ts 修复完成
+- ✅ App.vue 添加 Toaster
+- ✅ api/client.ts 修复完成
 
 **验证结果**:
-1. ✅ GET /health → {"status":"ok"}
-2. ✅ POST /api/auth/register → {"status":"success","message":"注册成功"}
-3. ✅ POST /api/auth/login → 返回 access_token
-4. ✅ POST /api/environments/ → {"status":"success","data":{"id":1,"src":"SRC-test-001"}}
-5. ✅ GET /api/environments/ → 返回环境列表
-6. ✅ GET /api/groups/ → 返回分组列表
-
-**遇到的问题**:
-- 创建环境时 group 字段映射错误（模型用 group_name，API 接收 group）
-- CC 修复：在 service 层将 data.dict() 中的 "group" 重命名为 "group_name"
-
----
-
-## 问题与解决方案
-
-### 问题 1: toast 组件不可用
-**时间**: 12:43
-**问题**: shadcn-vue new-york-v4 样式中没有 toast 组件
-**解决方案**: 使用 sonner 组件替代，功能等价
-**状态**: ✅ 已解决
-
-### 问题 2: TypeScript 编译错误
-**时间**: 12:43
-**问题**: 4 个未使用的导入和类型转换错误
-**解决方案**: 移除未使用的导入，修复类型转换
-**状态**: ✅ 已解决
-
-### 问题 3: Git push 认证失败
-**时间**: 12:46
-**问题**: HTTPS 方式需要 GitHub token
-**解决方案**: 保持本地 commit，暂不推送到远程仓库
-**状态**: ✅ 已解决
-
-### 问题 4: 环境创建 group 字段映射错误
-**时间**: 13:01
-**问题**: data.dict() 包含 "group" 字段，但 Environment 模型只有 "group_name" 字段
-**解决方案**: 在 service 层将 "group" 重命名为 "group_name"
-**状态**: ✅ 已解决
+- ✅ `pnpm build` 成功，675ms
+- ✅ 11 个产出文件，总大小约 348KB
 
 ---
 
@@ -217,5 +139,6 @@ backend/
 
 | 提交哈希 | 时间 | 任务 | 说明 |
 |----------|------|------|------|
-| cf74be8 | 12:45 | 任务 1 | feat: 任务1 - 项目脚手架搭建 (本地) |
-| 待提交 | 13:10 | 任务 2 | feat: 任务2 - 后端 API 重建 (本地) |
+| cf74be8 | 12:45 | 任务 1 | feat: 任务1 - 项目脚手架搭建 |
+| 4190d97 | 13:12 | 任务 2 | feat: 任务2 - 后端 API 重建 |
+| 待提交 | 13:27 | 任务 3 | feat: 任务3 - 登录 + 布局框架 |

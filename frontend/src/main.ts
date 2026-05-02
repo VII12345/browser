@@ -2,22 +2,25 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router'
+import { useAuthStore } from './stores/auth'
 import './style.css'
 
-// 路由守卫: 未登录时跳转到登录页
+const app = createApp(App)
+const pinia = createPinia()
+
+app.use(pinia)
+app.use(router)
+
+const authStore = useAuthStore()
+authStore.init()
+
 router.beforeEach((to) => {
-  const token = localStorage.getItem('access_token')
-  if (to.meta.requiresAuth !== false && !token) {
+  if (to.meta.requiresAuth !== false && !authStore.isLoggedIn) {
     return { name: 'login' }
   }
-  if (to.name === 'login' && token) {
+  if (to.name === 'login' && authStore.isLoggedIn) {
     return { name: 'environments' }
   }
 })
-
-const app = createApp(App)
-
-app.use(createPinia())
-app.use(router)
 
 app.mount('#app')
