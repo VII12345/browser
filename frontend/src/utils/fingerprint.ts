@@ -94,14 +94,14 @@ export function generateSrc(): string {
 /** 创建空的环境配置 */
 export function createEmptyConfig(): EnvironmentConfig {
   return {
-    src: '',
+    src: generateSrc(),
     name: '',
     os: 'Windows11',
     user_agent: '',
     group: '',
     notes: '',
     proxy_mode: '自定义',
-    proxy_type: 'No Proxy',
+    proxy_type: 'no',
     proxy_ip_channel: '',
     proxy_account_platform: '',
     proxy_tabs: '',
