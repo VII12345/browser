@@ -1,4 +1,4 @@
-import type { EnvironmentConfig } from '@/types/environment'
+import type { EnvironmentConfig } from '@/api/environment'
 
 /** GPU 型号列表 */
 export const GPU_MODELS = [
@@ -92,9 +92,8 @@ export function generateSrc(): string {
 }
 
 /** 创建空的环境配置 */
-export function createEmptyConfig(userId: string): EnvironmentConfig {
+export function createEmptyConfig(): EnvironmentConfig {
   return {
-    user_id: userId,
     src: '',
     name: '',
     os: 'Windows11',
@@ -140,8 +139,8 @@ export function createEmptyConfig(userId: string): EnvironmentConfig {
 }
 
 /** 生成随机配置 */
-export function generateRandomConfig(userId: string): EnvironmentConfig {
-  const config = createEmptyConfig(userId)
+export function generateRandomConfig(): EnvironmentConfig {
+  const config = createEmptyConfig()
   const rand = () => Math.random().toString(36).slice(2, 6).toUpperCase()
 
   config.name = `环境-${rand()}`

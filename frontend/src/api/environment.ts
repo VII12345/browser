@@ -1,30 +1,84 @@
 import { apiClient } from './client'
-import type {
-  DeleteRemoteFilesRequest,
-  SyncResponse,
-} from '@/types/environment'
-import type { ApiResponse } from '@/types/api'
+import type { EnvironmentListItem } from '@/types/environment'
 
-/** 获取用户的环境列表 */
-export function getEnvironments(userId: string) {
-  return apiClient.get<{ instances: { files: { file_name: string; url: string }[] }[] }>(
-    `/upload/instances/${userId}`,
-  )
+export interface EnvironmentConfig {
+  src: string
+  name: string
+  os: string
+  user_agent: string
+  group: string
+  notes: string
+  proxy_mode: string
+  proxy_type: string
+  proxy_ip_channel: string
+  proxy_account_platform: string
+  proxy_tabs: string
+  webrtc: string
+  timezone_mode: string
+  timezone: string
+  language_mode: string
+  language: string
+  resolution_mode: string
+  resolution: string
+  webgl_metadata: string
+  webgl_vendor: string
+  webgl_renderer: string
+  canvas: string
+  webgl_image: string
+  audiocontext: string
+  media_devices: string
+  clientrects: string
+  plugin: string
+  cpu_mode: string
+  cpu: string
+  ram_mode: string
+  ram: string
+  device_name_mode: string
+  device_name: string
+  mac_mode: string
+  mac_address: string
+  do_not_track: string
+  port_scan_mode: string
+  port_scan_ports: string
+  hardware_acceleration: string
+  tls: string
+  startup_args: string
 }
 
-/** 上传环境配置 (config + fingerprint 双文件上传) */
-export function uploadEnvironment(formData: FormData) {
-  return apiClient.post<ApiResponse>('/upload/upload/', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  })
+export interface GroupInfo {
+  name: string
+  count: number
 }
 
-/** 删除远程环境文件 */
-export function deleteRemoteFiles(data: DeleteRemoteFilesRequest) {
-  return apiClient.post<ApiResponse>('/upload/delete_files_by_folder', data)
+export async function fetchEnvironments(): Promise<EnvironmentListItem[]> {
+  const res = await apiClient.get('/environments/')
+  return res.data.items
 }
 
-/** 同步下载用户所有配置 */
-export function syncDownload(userId: string) {
-  return apiClient.get<SyncResponse>(`/upload/instances/${userId}`)
+export async function fetchEnvironmentDetail(id: number): Promise<EnvironmentConfig> {
+  const res = await apiClient.get(`/environments/${id}`)
+  return res.data
+}
+
+export async function createEnvironment(data: EnvironmentConfig): Promise<{ id: number; src: string }> {
+  const res = await apiClient.post('/environments/', data)
+  return res.data.data
+}
+
+export async function updateEnvironment(id: number, data: Partial<EnvironmentConfig>): Promise<void> {
+  await apiClient.put(`/environments/${id}`, data)
+}
+
+export async function deleteEnvironment(id: number): Promise<void> {
+  await apiClient.delete(`/environments/${id}`)
+}
+
+export async function fetchGroups(): Promise<GroupInfo[]> {
+  const res = await apiClient.get('/groups/')
+  return res.data.groups
+}
+
+export async function fetchGroupEnvironments(groupName: string): Promise<EnvironmentListItem[]> {
+  const res = await apiClient.get(`/groups/${encodeURIComponent(groupName)}/environments`)
+  return res.data.items
 }

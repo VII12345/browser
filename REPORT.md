@@ -15,11 +15,7 @@
 
 **12:29** - 开始任务 1
 
-**12:36** - 派 CC 出任务 1 plan（Plan 模式）
-
 **12:38** - CC plan 完成，审核通过
-
-**12:39** - 派 CC 执行代码编写（Agent 模式）
 
 **12:43** - CC 代码编写完成
 
@@ -33,13 +29,9 @@
 
 **12:50** - CC plan 完成，审核通过
 
-**12:51** - 派 CC 执行代码编写
-
 **13:00** - CC 代码编写完成
 
 **13:01** - 测试发现创建环境 bug
-
-**13:02** - 派 CC 修复 bug
 
 **13:03** - Bug 修复完成
 
@@ -53,13 +45,23 @@
 
 **13:15** - CC plan 完成，审核通过
 
-**13:16** - 派 CC 执行代码编写
-
 **13:25** - CC 代码编写完成
 
 **13:26** - Build 验证通过
 
-**13:27** - Git commit 成功
+**13:28** - Git commit 成功 (da126c5)
+
+#### 任务 4: 环境管理核心功能
+
+**13:29** - 开始任务 4
+
+**13:32** - CC plan 完成，审核通过
+
+**13:35** - CC 代码编写完成
+
+**13:36** - Build 验证通过
+
+**13:37** - Git commit 成功
 
 ---
 
@@ -69,69 +71,65 @@
 |------|------|----------|----------|----------|
 | 任务 1: 项目脚手架搭建 | ✅ 完成 | 12:29 | 12:45 | cf74be8 |
 | 任务 2: 后端 API 重建 | ✅ 完成 | 12:48 | 13:12 | 4190d97 |
-| 任务 3: 登录 + 布局框架 | ✅ 完成 | 13:13 | 13:27 | 待提交 |
-| 任务 4: 环境管理核心功能 | 待开始 | - | - | - |
+| 任务 3: 登录 + 布局框架 | ✅ 完成 | 13:13 | 13:28 | da126c5 |
+| 任务 4: 环境管理核心功能 | ✅ 完成 | 13:29 | 13:37 | 待提交 |
 | 任务 5: 联调 + 收尾 | 待开始 | - | - | - |
 
 ---
 
 ## Plan 记录
 
-### 任务 3 Plan
+### 任务 4 Plan
 
 **Plan 来源**: Claude Code (Plan 模式)
 
 **Plan 状态**: ✅ 审核通过
 
-#### 现有代码分析
+#### 发现的问题
 
-**已有的基础设施（良好的部分）:**
-- `src/stores/auth.ts` — 完整的 auth store
-- `src/api/auth.ts` + `src/api/client.ts` — API 层完整
-- `src/types/auth.ts` — 类型定义完整
-- `src/router/routes.ts` — 路由定义完整
-- shadcn-vue 组件库已安装
-
-**发现的问题:**
-1. LoginView.vue 使用原生 HTML，未使用 shadcn-vue 组件
-2. DefaultLayout.vue 使用原生 HTML + 内联 SVG
-3. style.css 只有亮色主题，没有暗色主题
-4. authStore.init() 未被调用
-5. App.vue 缺少 Toaster
-6. api/client.ts 的 401 处理绕过 auth store
+1. **API 层不匹配**: 前端仍调用旧 `/upload/` 端点，后端已改为 RESTful CRUD
+2. **Store 架构过时**: 通过下载 JSON 文件获取环境，而非使用 `GET /api/environments/`
+3. **TypeScript 类型不匹配**: `EnvironmentListItem` 缺少 `id` 字段
+4. **未使用 shadcn-vue 组件**: 两个主要页面使用原生 HTML
+5. **编辑模式脆弱**: 依赖 `configCache` 而非直接调用 API
+6. **无删除确认对话框**: 使用原生 `confirm()`
+7. **缺少搜索/分页**
+8. **缺少 hardware_acceleration UI 字段**
+9. **缺少 device_name 和 mac_address UI 字段**
+10. **无远程启动功能**
 
 #### 执行步骤
 
-1. 添加暗色主题 CSS 变量到 style.css
-2. 创建 src/composables/useTheme.ts 主题切换工具
-3. 重写 LoginView.vue（使用 Card, Tabs, Input, Button, Label）
-4. 重写 DefaultLayout.vue（使用 lucide 图标 + DropdownMenu + Tooltip）
-5. 修复 main.ts（调用 authStore.init()）
-6. 修改 App.vue（添加 Toaster）
-7. 修复 api/client.ts（401 处理改用 authStore.logout()）
+1. 修改 types/environment.ts 添加 id 字段
+2. 重写 api/environment.ts 使用 RESTful CRUD
+3. 重写 stores/environment.ts 使用新 API
+4. 重写 EnvironmentListView.vue（搜索、全选、批量删除、卡片布局）
+5. 重写 EnvironmentCreateView.vue（shadcn-vue 组件、编辑模式、缺失字段）
+6. 重写 GroupView.vue
+7. 更新 utils/fingerprint.ts
 
 ---
 
 ## 审核记录
 
-### 任务 3 代码审核
+### 任务 4 代码审核
 
-**审核时间**: 13:26
+**审核时间**: 13:36
 
 **审核结果**: ✅ 通过
 
 **执行摘要**:
-- ✅ 暗色主题支持添加
-- ✅ 主题切换 composable 创建
-- ✅ LoginView.vue 重写完成
-- ✅ DefaultLayout.vue 重写完成
-- ✅ main.ts 修复完成
-- ✅ App.vue 添加 Toaster
-- ✅ api/client.ts 修复完成
+- ✅ types/environment.ts 添加 id 字段
+- ✅ api/environment.ts 重写为 RESTful CRUD
+- ✅ stores/environment.ts 重写使用新 API
+- ✅ EnvironmentListView.vue 重写完成
+- ✅ EnvironmentCreateView.vue 重写完成
+- ✅ GroupView.vue 重写完成
+- ✅ utils/fingerprint.ts 更新
 
 **验证结果**:
-- ✅ `pnpm build` 成功，675ms
-- ✅ 11 个产出文件，总大小约 348KB
+- ✅ `pnpm build` 成功，550ms
+- ✅ 2526 个模块转换
 
 ---
 
@@ -141,4 +139,5 @@
 |----------|------|------|------|
 | cf74be8 | 12:45 | 任务 1 | feat: 任务1 - 项目脚手架搭建 |
 | 4190d97 | 13:12 | 任务 2 | feat: 任务2 - 后端 API 重建 |
-| 待提交 | 13:27 | 任务 3 | feat: 任务3 - 登录 + 布局框架 |
+| da126c5 | 13:28 | 任务 3 | feat: 任务3 - 登录页面和布局框架重构 |
+| 待提交 | 13:37 | 任务 4 | feat: 任务4 - 环境管理核心功能 |

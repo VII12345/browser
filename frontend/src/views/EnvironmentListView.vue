@@ -1,196 +1,233 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useEnvironmentStore } from '@/stores/environment'
 import type { EnvironmentListItem } from '@/types/environment'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Badge } from '@/components/ui/badge'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import {
+  Plus,
+  Search,
+  Trash2,
+  Pencil,
+  Play,
+  Loader2,
+  RefreshCw,
+} from 'lucide-vue-next'
 
 const router = useRouter()
-const envStore = useEnvironmentStore()
+const store = useEnvironmentStore()
 
-// 选中的环境
-const selectedEnvs = ref<Set<string>>(new Set())
-// 当前查看的分组 (null = 所有)
-const activeGroup = ref<string | null>(null)
+const searchQuery = ref('')
+const selectedIds = ref<number[]>([])
+const deleteDialogOpen = ref(false)
+const deleteTarget = ref<number | null>(null)
+const isBatchDelete = ref(false)
 
-// 过滤后的环境列表
 const filteredEnvironments = computed(() => {
-  if (!activeGroup.value) return envStore.environments
-  return envStore.getEnvironmentsByGroup(activeGroup.value)
+  if (!searchQuery.value) return store.environments
+  const query = searchQuery.value.toLowerCase()
+  return store.environments.filter(
+    (e) =>
+      e.name.toLowerCase().includes(query) ||
+      e.group.toLowerCase().includes(query) ||
+      e.notes.toLowerCase().includes(query)
+  )
 })
 
-// 全选状态
 const isAllSelected = computed(() => {
-  if (filteredEnvironments.value.length === 0) return false
-  return filteredEnvironments.value.every((env) => selectedEnvs.value.has(env.src))
+  return filteredEnvironments.value.length > 0 && 
+    filteredEnvironments.value.every(e => selectedIds.value.includes(e.id))
 })
-
-onMounted(() => {
-  envStore.fetchEnvironments()
-})
-
-function toggleSelect(src: string) {
-  if (selectedEnvs.value.has(src)) {
-    selectedEnvs.value.delete(src)
-  } else {
-    selectedEnvs.value.add(src)
-  }
-}
 
 function toggleSelectAll() {
   if (isAllSelected.value) {
-    selectedEnvs.value.clear()
+    selectedIds.value = []
   } else {
-    for (const env of filteredEnvironments.value) {
-      selectedEnvs.value.add(env.src)
-    }
+    selectedIds.value = filteredEnvironments.value.map(e => e.id)
   }
 }
 
-function editEnvironment(env: EnvironmentListItem) {
-  router.push({ name: 'environment-edit', params: { id: env.src } })
-}
-
-async function deleteEnvironment(env: EnvironmentListItem) {
-  if (!confirm(`确定要删除环境 "${env.name}" 吗？`)) return
-
-  // 从缓存中获取完整配置
-  const config = envStore.configCache.get(`config_${env.src}.json`)
-  if (config) {
-    await envStore.deleteEnvironment(config, `config_${env.src}.json`)
+function toggleSelect(id: number) {
+  const idx = selectedIds.value.indexOf(id)
+  if (idx === -1) {
+    selectedIds.value.push(id)
+  } else {
+    selectedIds.value.splice(idx, 1)
   }
 }
 
-function handleSync() {
-  envStore.syncEnvironments()
+function openDeleteDialog(id: number) {
+  deleteTarget.value = id
+  isBatchDelete.value = false
+  deleteDialogOpen.value = true
 }
+
+function openBatchDeleteDialog() {
+  isBatchDelete.value = true
+  deleteDialogOpen.value = true
+}
+
+async function confirmDelete() {
+  if (isBatchDelete.value) {
+    await store.batchDelete(selectedIds.value)
+    selectedIds.value = []
+  } else if (deleteTarget.value !== null) {
+    await store.deleteEnvironment(deleteTarget.value)
+  }
+  deleteDialogOpen.value = false
+  deleteTarget.value = null
+}
+
+function handleEdit(env: EnvironmentListItem) {
+  router.push({ name: 'environment-edit', params: { id: env.id } })
+}
+
+function handleCreate() {
+  router.push({ name: 'environment-create' })
+}
+
+onMounted(() => {
+  store.fetchEnvironments()
+  store.fetchGroups()
+})
 </script>
 
 <template>
-  <div class="space-y-6">
+  <div class="space-y-4">
     <!-- 顶部操作栏 -->
     <div class="flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <h2 class="text-lg font-semibold">我的浏览器环境</h2>
-        <button
-          :disabled="envStore.syncing"
-          class="rounded-md border border-border px-3 py-1.5 text-sm font-medium hover:bg-accent disabled:opacity-50 transition-colors"
-          @click="handleSync"
-        >
-          {{ envStore.syncing ? '同步中...' : '同步' }}
-        </button>
-      </div>
-
-      <div class="flex items-center gap-3">
-        <label class="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            :checked="isAllSelected"
-            class="rounded border-input"
-            @change="toggleSelectAll"
+      <div class="flex items-center gap-2">
+        <div class="relative">
+          <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            v-model="searchQuery"
+            placeholder="搜索环境..."
+            class="pl-9 w-64"
           />
-          全选
-        </label>
-        <button
-          :disabled="selectedEnvs.size === 0"
-          class="rounded-md bg-primary px-4 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors"
+        </div>
+        <Button variant="outline" size="icon" @click="store.fetchEnvironments()">
+          <RefreshCw class="h-4 w-4" />
+        </Button>
+      </div>
+      <div class="flex items-center gap-2">
+        <Button
+          v-if="selectedIds.length > 0"
+          variant="destructive"
+          size="sm"
+          @click="openBatchDeleteDialog"
         >
-          启动勾选环境 ({{ selectedEnvs.size }})
-        </button>
+          <Trash2 class="mr-2 h-4 w-4" />
+          删除选中 ({{ selectedIds.length }})
+        </Button>
+        <Button @click="handleCreate">
+          <Plus class="mr-2 h-4 w-4" />
+          新建环境
+        </Button>
       </div>
     </div>
 
-    <!-- Loading 状态 -->
-    <div v-if="envStore.loading && envStore.environments.length === 0" class="py-12 text-center text-muted-foreground">
-      加载中...
+    <!-- 加载状态 -->
+    <div v-if="store.loading" class="flex items-center justify-center py-12">
+      <Loader2 class="h-8 w-8 animate-spin text-muted-foreground" />
     </div>
 
     <!-- 空状态 -->
     <div
-      v-else-if="envStore.environments.length === 0 && !envStore.loading"
-      class="py-12 text-center"
+      v-else-if="filteredEnvironments.length === 0"
+      class="flex flex-col items-center justify-center py-12 text-muted-foreground"
     >
-      <p class="text-muted-foreground mb-4">暂无浏览器环境</p>
-      <button
-        class="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
-        @click="router.push({ name: 'environment-create' })"
-      >
-        新建环境
-      </button>
+      <p class="text-lg font-medium">暂无环境</p>
+      <p class="text-sm">点击"新建环境"创建第一个浏览器环境</p>
     </div>
 
-    <!-- 分组标签 -->
-    <div v-if="envStore.groups.length > 0" class="flex flex-wrap gap-2">
-      <button
-        :class="[
-          'rounded-full px-3 py-1 text-xs font-medium transition-colors',
-          activeGroup === null
-            ? 'bg-primary text-primary-foreground'
-            : 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-        ]"
-        @click="activeGroup = null"
-      >
-        全部 ({{ envStore.environments.length }})
-      </button>
-      <button
-        v-for="group in envStore.groups"
-        :key="group.name"
-        :class="[
-          'rounded-full px-3 py-1 text-xs font-medium transition-colors',
-          activeGroup === group.name
-            ? 'bg-primary text-primary-foreground'
-            : 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-        ]"
-        @click="activeGroup = group.name"
-      >
-        {{ group.name }} ({{ group.count }})
-      </button>
-    </div>
+    <!-- 环境列表 -->
+    <template v-else>
+      <!-- 全选 -->
+      <div class="flex items-center gap-2 px-1">
+        <Checkbox
+          :checked="isAllSelected"
+          @update:checked="toggleSelectAll"
+        />
+        <span class="text-sm text-muted-foreground">全选</span>
+      </div>
 
-    <!-- 环境卡片列表 -->
-    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      <div
-        v-for="env in filteredEnvironments"
-        :key="env.src"
-        class="rounded-lg border border-border bg-card p-4 shadow-sm transition-shadow hover:shadow-md"
-      >
-        <!-- 卡片头部: 复选框 + 名称 -->
-        <div class="mb-3 flex items-center gap-3">
-          <input
-            type="checkbox"
-            :checked="selectedEnvs.has(env.src)"
-            class="rounded border-input"
-            @change="toggleSelect(env.src)"
-          />
-          <h3 class="text-sm font-semibold truncate">{{ env.name }}</h3>
-        </div>
+      <!-- 卡片网格 -->
+      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div
+          v-for="env in filteredEnvironments"
+          :key="env.id"
+          class="rounded-lg border border-border bg-card p-4 transition-colors hover:bg-accent/50"
+        >
+          <div class="flex items-start justify-between">
+            <div class="flex items-center gap-2">
+              <Checkbox
+                :checked="selectedIds.includes(env.id)"
+                @update:checked="toggleSelect(env.id)"
+              />
+              <div>
+                <h3 class="font-medium">{{ env.name || '未命名环境' }}</h3>
+                <p class="text-xs text-muted-foreground">{{ env.src }}</p>
+              </div>
+            </div>
+            <Badge variant="secondary">{{ env.os }}</Badge>
+          </div>
 
-        <!-- 详情 -->
-        <div class="mb-4 space-y-1 text-xs text-muted-foreground">
-          <p>UA: <span class="text-foreground">{{ env.user_agent || '默认' }}</span></p>
-          <p>系统: <span class="text-foreground">{{ env.os }}</span></p>
-          <p>备注: <span class="text-foreground">{{ env.notes || '无' }}</span></p>
-          <p>代理: <span class="text-foreground">{{ env.proxy_ip_channel || '未设置' }}</span></p>
-        </div>
+          <div class="mt-3 space-y-1 text-sm text-muted-foreground">
+            <p v-if="env.group">分组: {{ env.group }}</p>
+            <p v-if="env.notes">备注: {{ env.notes }}</p>
+            <p v-if="env.proxy_type !== 'no'">代理: {{ env.proxy_ip_channel }}</p>
+          </div>
 
-        <!-- 操作按钮 -->
-        <div class="flex gap-2">
-          <button class="flex-1 rounded-md bg-primary px-2 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90 transition-colors">
-            启动
-          </button>
-          <button
-            class="flex-1 rounded-md border border-border px-2 py-1.5 text-xs font-medium hover:bg-accent transition-colors"
-            @click="editEnvironment(env)"
-          >
-            编辑
-          </button>
-          <button
-            class="rounded-md border border-destructive/30 px-2 py-1.5 text-xs font-medium text-destructive hover:bg-destructive/10 transition-colors"
-            @click="deleteEnvironment(env)"
-          >
-            删除
-          </button>
+          <div class="mt-4 flex items-center gap-2">
+            <Button variant="outline" size="sm" class="flex-1" @click="handleEdit(env)">
+              <Pencil class="mr-1 h-3 w-3" />
+              编辑
+            </Button>
+            <Button variant="outline" size="sm" class="flex-1">
+              <Play class="mr-1 h-3 w-3" />
+              启动
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              class="h-8 w-8 text-destructive hover:text-destructive"
+              @click="openDeleteDialog(env.id)"
+            >
+              <Trash2 class="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
+    </template>
+
+    <!-- 删除确认对话框 -->
+    <Dialog v-model:open="deleteDialogOpen">
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>确认删除</DialogTitle>
+          <DialogDescription>
+            {{ isBatchDelete 
+              ? `确定要删除选中的 ${selectedIds.length} 个环境吗？此操作不可撤销。`
+              : '确定要删除这个环境吗？此操作不可撤销。'
+            }}
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" @click="deleteDialogOpen = false">取消</Button>
+          <Button variant="destructive" @click="confirmDelete">删除</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   </div>
 </template>

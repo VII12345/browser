@@ -103,6 +103,7 @@ export interface FingerprintConfig {
 
 /** 环境列表项 (用于列表展示) */
 export interface EnvironmentListItem {
+  id: number
   src: string
   name: string
   os: string
