@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useEnvironmentStore } from '@/stores/environment'
 import type { EnvironmentListItem } from '@/types/environment'
 import { Button } from '@/components/ui/button'
@@ -26,9 +26,10 @@ import {
 } from 'lucide-vue-next'
 
 const router = useRouter()
+const route = useRoute()
 const store = useEnvironmentStore()
 
-const searchQuery = ref('')
+const searchQuery = ref((route.query.group as string) || '')
 const selectedIds = ref<number[]>([])
 const deleteDialogOpen = ref(false)
 const deleteTarget = ref<number | null>(null)

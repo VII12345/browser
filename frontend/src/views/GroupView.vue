@@ -1,11 +1,17 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useEnvironmentStore } from '@/stores/environment'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { FolderTree, Layers } from 'lucide-vue-next'
 
+const router = useRouter()
 const store = useEnvironmentStore()
+
+function viewGroup(groupName: string) {
+  router.push({ name: 'environments', query: { group: groupName } })
+}
 
 onMounted(() => {
   store.fetchGroups()
@@ -35,7 +41,7 @@ onMounted(() => {
               <Layers class="inline mr-1 h-4 w-4" />
               {{ group.count }} 个环境
             </span>
-            <Button variant="outline" size="sm">查看</Button>
+            <Button variant="outline" size="sm" @click="viewGroup(group.name)">查看</Button>
           </div>
         </CardContent>
       </Card>
