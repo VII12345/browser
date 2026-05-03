@@ -2,7 +2,7 @@ import { ref } from 'vue'
 
 type Theme = 'light' | 'dark' | 'system'
 
-const theme = ref<Theme>((localStorage.getItem('theme') as Theme) || 'dark')
+const theme = ref<Theme>((localStorage.getItem('theme') as Theme) || 'light')
 
 function applyTheme(t: Theme) {
   const isDark = t === 'dark' || (t === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
