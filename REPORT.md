@@ -79,7 +79,25 @@
 
 **13:47** - API 联调测试全部通过
 
-**13:48** - Git commit 成功
+**13:48** - Git commit 成功 (01e7980)
+
+#### 额外任务: MySQL 迁移
+
+**13:50** - 用户要求将 SQLite 改为 MySQL
+
+**13:51** - 派 CC 执行 MySQL 迁移
+
+**13:54** - MySQL 迁移完成，API 测试通过
+
+#### 额外任务: UI 修复
+
+**13:55** - 用户反馈按钮和输入框可见性问题
+
+**13:56** - 派 CC 修复 UI 问题
+
+**13:58** - UI 修复完成，build 通过
+
+**13:59** - Git commit 成功
 
 ---
 
@@ -91,72 +109,50 @@
 | 任务 2: 后端 API 重建 | ✅ 完成 | 12:48 | 13:12 | 4190d97 |
 | 任务 3: 登录 + 布局框架 | ✅ 完成 | 13:13 | 13:28 | da126c5 |
 | 任务 4: 环境管理核心功能 | ✅ 完成 | 13:29 | 13:38 | 4c5414e |
-| 任务 5: 联调 + 收尾 | ✅ 完成 | 13:39 | 13:48 | 待提交 |
+| 任务 5: 联调 + 收尾 | ✅ 完成 | 13:39 | 13:48 | 01e7980 |
+| MySQL 迁移 | ✅ 完成 | 13:50 | 13:54 | 待提交 |
+| UI 修复 | ✅ 完成 | 13:55 | 13:59 | 待提交 |
 
 ---
 
-## Plan 记录
+## MySQL 迁移详情
 
-### 任务 5 Plan
+**时间**: 13:50 - 13:54
 
-**Plan 来源**: Claude Code (Plan 模式)
+**改动**:
+- config.py: DATABASE_URL 改为 MySQL 连接字符串
+- database.py: 移除 SQLite 特有参数，添加 pool_pre_ping
+- models/user.py: 添加 String 长度限制（MySQL 要求）
+- models/environment.py: 添加 String 长度限制
+- requirements.txt: 添加 pymysql 依赖
 
-**Plan 状态**: ✅ 审核通过
+**MySQL 配置**:
+- 主机: localhost
+- 端口: 3306
+- 用户: root
+- 数据库: browser_manager
 
-#### 发现的问题
-
-1. **src 字段为空字符串**: createEmptyConfig() 中 src: '' 会导致第二次创建因 unique 约束冲突而失败
-2. **代理类型值不一致**: 前端默认 'No Proxy'，后端默认 'no'
-
-#### 执行步骤
-
-1. 修复 fingerprint.ts 中 src 空值问题
-2. 统一代理类型值
-3. 启动后端服务
-4. 启动前端开发服务器
-5. 逐个 API 端点 curl 测试
-6. 前端完整流程测试
-
----
-
-## 审核记录
-
-### 任务 5 代码审核
-
-**审核时间**: 13:47
-
-**审核结果**: ✅ 通过
-
-**执行摘要**:
-- ✅ 修复 fingerprint.ts 中 src 空值问题
-- ✅ 统一代理类型值为 'no'
-
-**联调测试结果**:
-- ✅ GET /health → {"status":"ok"}
-- ✅ POST /api/auth/register → {"status":"success","message":"注册成功"}
-- ✅ POST /api/auth/login → 返回 access_token
-- ✅ POST /api/environments/ → {"status":"success","data":{"id":2,"src":"SRC-INTEGRATION-001"}}
-- ✅ GET /api/environments/ → 返回环境列表
-- ✅ GET /api/environments/2 → 返回完整环境详情
-- ✅ PUT /api/environments/2 → {"status":"success"}
-- ✅ GET /api/groups/ → 返回分组列表
-- ✅ DELETE /api/environments/2 → {"status":"success","message":"删除成功"}
+**验证结果**:
+- ✅ MySQL 数据库创建成功
+- ✅ 表结构自动创建
+- ✅ 注册/登录 API 测试通过
 
 ---
 
-## 问题与解决方案
+## UI 修复详情
 
-### 问题 1: src 字段为空字符串
-**时间**: 13:43
-**问题**: createEmptyConfig() 中 src: '' 会导致 unique 约束冲突
-**解决方案**: 改为 src: generateSrc()
-**状态**: ✅ 已解决
+**时间**: 13:55 - 13:59
 
-### 问题 2: 代理类型值不一致
-**时间**: 13:43
-**问题**: 前端默认 'No Proxy'，后端默认 'no'
-**解决方案**: 统一为 'no'
-**状态**: ✅ 已解决
+**问题**: 暗色主题下按钮和输入框文字不可见
+
+**根本原因**: shadcn-vue 组件在暗色模式下缺少显式的 text-foreground 颜色
+
+**修复**:
+- Input.vue: 添加 text-foreground 类
+- button/index.ts: outline 和 ghost 变体添加 text-foreground
+- SelectTrigger.vue: 添加 text-foreground
+
+**验证**: pnpm build 成功
 
 ---
 
@@ -168,22 +164,18 @@
 | 4190d97 | 13:12 | 任务 2 | feat: 任务2 - 后端 API 重建 |
 | da126c5 | 13:28 | 任务 3 | feat: 任务3 - 登录页面和布局框架重构 |
 | 4c5414e | 13:38 | 任务 4 | feat: 任务4 - 环境管理核心功能 |
-| 待提交 | 13:48 | 任务 5 | fix: 联调问题修复 + 前后端联调验证 |
+| 01e7980 | 13:48 | 任务 5 | fix: 联调问题修复 + 前后端联调验证 |
+| 待提交 | 13:54 | MySQL | refactor: SQLite 迁移到 MySQL |
+| 待提交 | 13:59 | UI | fix: 修复暗色主题下按钮和输入框可见性 |
 
 ---
 
-## 项目完成总结
-
-### 完成的任务
-1. ✅ 项目脚手架搭建（Vue 3 + TypeScript + TailwindCSS v4 + shadcn-vue）
-2. ✅ 后端 API 重建（FastAPI + SQLite + JWT）
-3. ✅ 登录页面和布局框架重构
-4. ✅ 环境管理核心功能
-5. ✅ 前后端联调验证
+## 最终项目状态
 
 ### 技术栈
 - **前端**: Vue 3 + TypeScript + Vite + TailwindCSS v4 + shadcn-vue + Pinia + Vue Router
-- **后端**: FastAPI + SQLite + SQLAlchemy + JWT + bcrypt
+- **后端**: FastAPI + MySQL + SQLAlchemy + JWT + bcrypt
+- **数据库**: MySQL 8.4 (browser_manager)
 
 ### 功能清单
 - ✅ 用户认证（注册/登录/重置密码）
@@ -191,15 +183,8 @@
 - ✅ 分组管理
 - ✅ 搜索过滤
 - ✅ 批量操作
-- ✅ 暗色主题
+- ✅ 暗色主题（已修复可见性问题）
 - ✅ 响应式布局
-
-### API 端点
-- POST /api/auth/register, /login, /reset-password
-- GET/POST /api/environments/
-- GET/PUT/DELETE /api/environments/{id}
-- GET /api/groups/
-- GET /api/groups/{name}/environments
 
 ### 启动命令
 ```bash
