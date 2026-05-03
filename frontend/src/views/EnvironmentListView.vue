@@ -157,8 +157,8 @@ onMounted(() => {
       <!-- 全选 -->
       <div class="flex items-center gap-2 px-1">
         <Checkbox
-          :checked="isAllSelected"
-          @update:checked="toggleSelectAll"
+          :model-value="isAllSelected"
+          @update:model-value="toggleSelectAll"
         />
         <span class="text-sm text-muted-foreground">全选</span>
       </div>
@@ -173,8 +173,8 @@ onMounted(() => {
           <div class="flex items-start justify-between">
             <div class="flex items-center gap-2">
               <Checkbox
-                :checked="selectedIds.includes(env.id)"
-                @update:checked="toggleSelect(env.id)"
+                :model-value="selectedIds.includes(env.id)"
+                @update:model-value="toggleSelect(env.id)"
               />
               <div>
                 <h3 class="font-medium">{{ env.name || '未命名环境' }}</h3>
